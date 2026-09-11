@@ -1,9 +1,8 @@
 package com.example.coingeckoapi.data.coinMapper
 
-import com.example.coingeckoapi.data.remote.response.CoinGeckoResponse
 import com.example.coingeckoapi.data.remote.response.CoinGeckoResponseItem
 import com.example.coingeckoapi.data.roomdb.CoinEntity
-import com.example.coingeckoapi.domain.dto.CoinModel
+import com.example.coingeckoapi.domain.model.CoinModel
 
 fun CoinGeckoResponseItem.toModel() : CoinModel {
     return CoinModel(

@@ -4,7 +4,7 @@ import com.example.coingeckoapi.data.coinMapper.toCoinEntityListFromAPI
 import com.example.coingeckoapi.data.coinMapper.toCoinModelList
 import com.example.coingeckoapi.data.remote.CoingeckoAPIService
 import com.example.coingeckoapi.data.roomdb.dao.CoinDao
-import com.example.coingeckoapi.domain.dto.CoinModel
+import com.example.coingeckoapi.domain.model.CoinModel
 import com.example.coingeckoapi.domain.helper.toUserFriendlyMessage
 import com.example.coingeckoapi.domain.repository.CoinRepository
 import kotlinx.coroutines.flow.Flow

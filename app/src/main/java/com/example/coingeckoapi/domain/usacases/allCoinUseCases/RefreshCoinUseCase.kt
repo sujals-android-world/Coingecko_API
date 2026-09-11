@@ -1,4 +1,4 @@
-package com.example.coingeckoapi.domain.usacases
+package com.example.coingeckoapi.domain.usacases.allCoinUseCases
 
 import com.example.coingeckoapi.domain.repository.CoinRepository
 import javax.inject.Inject

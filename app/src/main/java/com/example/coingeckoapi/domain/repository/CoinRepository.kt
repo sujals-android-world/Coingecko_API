@@ -1,6 +1,6 @@
 package com.example.coingeckoapi.domain.repository
 
-import com.example.coingeckoapi.domain.dto.CoinModel
+import com.example.coingeckoapi.domain.model.CoinModel
 import kotlinx.coroutines.flow.Flow
 
 

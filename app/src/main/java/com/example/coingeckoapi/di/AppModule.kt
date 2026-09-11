@@ -4,13 +4,22 @@ import android.content.Context
 import androidx.room.Room
 import com.example.coingeckoapi.data.remote.CoingeckoAPIService
 import com.example.coingeckoapi.data.repositoryImpl.CoinRepositoryImpl
+import com.example.coingeckoapi.data.repositoryImpl.PreferenceRepoImpl
+import com.example.coingeckoapi.data.repositoryImpl.UserRepositoryImpl
 import com.example.coingeckoapi.data.roomdb.dao.CoinDao
+import com.example.coingeckoapi.data.roomdb.dao.UserDao
 import com.example.coingeckoapi.data.roomdb.db.CoinDB
 import com.example.coingeckoapi.domain.repository.CoinRepository
-import com.example.coingeckoapi.domain.usacases.CoinUseCases
-import com.example.coingeckoapi.domain.usacases.GetAllCoin
-import com.example.coingeckoapi.domain.usacases.GetCoinByIdUseCase
-import com.example.coingeckoapi.domain.usacases.RefreshCoinUseCase
+import com.example.coingeckoapi.domain.repository.PreferenceRepository
+import com.example.coingeckoapi.domain.repository.UserRepository
+import com.example.coingeckoapi.domain.usacases.allCoinUseCases.CoinUseCases
+import com.example.coingeckoapi.domain.usacases.allCoinUseCases.GetAllCoin
+import com.example.coingeckoapi.domain.usacases.allUserUseCases.GetUserUseCase
+import com.example.coingeckoapi.domain.usacases.allCoinUseCases.RefreshCoinUseCase
+import com.example.coingeckoapi.domain.usacases.allUserUseCases.AllUserUseCases
+import com.example.coingeckoapi.domain.usacases.allUserUseCases.CreateUserUseCase
+import com.example.coingeckoapi.domain.usacases.allUserUseCases.GetUserDetailUseCase
+import com.example.coingeckoapi.domain.usacases.allUserUseCases.SaveUserUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -49,8 +58,18 @@ abstract class AppModule {
         fun provideCoinUseCases(repository: CoinRepository) : CoinUseCases {
             return CoinUseCases(
                 getCoin = GetAllCoin(repository = repository),
-                refreshCoins = RefreshCoinUseCase(repository),
-                getCoinById = GetCoinByIdUseCase(repository),
+                refreshCoins = RefreshCoinUseCase(repository)
+            )
+        }
+
+        @Provides
+        @Singleton
+        fun provideUserUseCases(repository: UserRepository, preferenceRepository: PreferenceRepository) : AllUserUseCases {
+            return AllUserUseCases(
+                getUserUseCase = GetUserUseCase(preferenceRepository),
+                saveUserUseCase = SaveUserUseCase(preferenceRepository),
+                createUserUseCase = CreateUserUseCase(repository),
+                getUserDetailUseCase = GetUserDetailUseCase(repository)
             )
         }
 
@@ -69,9 +88,23 @@ abstract class AppModule {
         fun provideCoinDao(db: CoinDB) : CoinDao {
             return db.coinDao()
         }
+
+        @Provides
+        @Singleton
+        fun provideUserDao(db: CoinDB) : UserDao {
+            return db.userDao()
+        }
     }
 
     @Binds
     @Singleton
     abstract fun bindCoinRepository(coinRepositoryImpl: CoinRepositoryImpl): CoinRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPreferencesRepository(preferenceRepoImpl: PreferenceRepoImpl) : PreferenceRepository
 }

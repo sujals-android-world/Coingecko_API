@@ -3,14 +3,15 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
-    namespace = "com.example.coingeckoapi"
+    namespace = "com.example.CoingeckoAPI"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.example.coingeckoapi"
+        applicationId = "com.example.CoingeckoAPI"
         minSdk = 29
         targetSdk = 37
         versionCode = 38
@@ -37,52 +38,49 @@ android {
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
+    // 1. Base Platform & Android Extensions (Duplicates cleaned up)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
+
+    // 2. Visual Extended Icons & Core Navigation
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.jupiter.junit.jupiter)
+
+    // 3. Clean Setup via Your Custom Bundles
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.room)
+    implementation(libs.bundles.hilt)
+    implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.coil)
+
+    // 4. Annotation Processors via KSP
     ksp(libs.hilt.compiler)
-    testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.retrofit.core)
-    implementation(libs.retrofit.converter.gson)
-    implementation("androidx.compose.material:material-icons-core:1.7.8")
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.common)
 
-    // Test library for junit6,mock,platform launcher,turbine
-    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
-    testImplementation("org.mockito:mockito-core:5.14.2")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    // 5. Unit Testing Frameworks
+    testImplementation(libs.bundles.unitTest)
+    testImplementation(libs.room.testing)
 
+    // 6. UI Instrumented Testing & Debugging Tools (Duplicates cleaned up)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    // 7. DataStore
+    implementation(libs.bundles.datastore)
 }
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
+
 }

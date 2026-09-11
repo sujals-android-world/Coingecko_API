@@ -13,13 +13,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.coingeckoapi.domain.dto.CoinModel
+import com.example.coingeckoapi.domain.model.CoinModel
 import com.example.coingeckoapi.presentation.coinViewModel.CoinDetailState
+
 
 @Composable
 fun DetailedCoin(
-    state: CoinDetailState
+    state: CoinDetailState,
 ) {
+
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background

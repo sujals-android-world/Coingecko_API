@@ -1,6 +1,7 @@
 package com.example.coingeckoapi.presentation.coinViewModel
 
-import com.example.coingeckoapi.domain.dto.CoinModel
+import com.example.coingeckoapi.domain.model.CoinModel
+import com.example.coingeckoapi.domain.model.UserModel
 
 data class CoinState(
     val isSuccess : Boolean = false,
@@ -19,3 +20,16 @@ data class CoinDetailState(
 sealed class UiEvent {
     data class ShowToast(val message: String) : UiEvent()
 }
+
+data class UserState(
+    val isSuccess : Boolean = false,
+    val isLoading : Boolean = false,
+    val isError : String = "",
+    val userList : List<UserModel> = emptyList()
+)
+
+data class UserDetailState(
+    val isLoading : Boolean = false,
+    val user : UserModel? = null
+)
+

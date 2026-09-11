@@ -1,4 +1,4 @@
-package com.example.coingeckoapi.domain.dto
+package com.example.coingeckoapi.domain.model
 
 import com.example.coingeckoapi.data.remote.response.RoiX
 

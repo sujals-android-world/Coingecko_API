@@ -1,4 +1,4 @@
-package com.example.coingeckoapi.presentation.screens
+package com.example.coingeckoapi.presentation.screens.bottomBarScreens
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -19,13 +19,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.coingeckoapi.domain.dto.CoinModel
+import com.example.coingeckoapi.domain.model.CoinModel
 import com.example.coingeckoapi.presentation.coinViewModel.CoinState
 import com.example.coingeckoapi.presentation.coinViewModel.UiEvent
 import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun CoinScreen(
+fun Market(
     coinListState : CoinState,
     searchQuery : String,
     eventFlow: Flow<UiEvent>,

@@ -1,9 +1,8 @@
 package com.example.coingeckoapi.presentation.coinViewModel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.coingeckoapi.domain.usacases.CoinUseCases
+import com.example.coingeckoapi.domain.usacases.allCoinUseCases.CoinUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -25,9 +24,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CoinViewModel @Inject constructor(
+class MarketViewModel @Inject constructor(
     private val coinUseCases: CoinUseCases,
-    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
@@ -60,6 +58,7 @@ class CoinViewModel @Inject constructor(
                     delay(10_000)
                 }
             } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             }
         }
     }
@@ -82,7 +81,6 @@ class CoinViewModel @Inject constructor(
                     CoinState(coinList = filteredList, isLoading = false)
                 }
                 .onStart {
-                    // लोडिंग को पहले ट्रू करें, डिले की जरूरत यहाँ आमतौर पर नहीं होती
                     emit(CoinState(isLoading = true))
                 }
                 .catch { e ->
@@ -94,35 +92,6 @@ class CoinViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = CoinState(isLoading = true)
         )
-
-
-
-
-    val coinDetailState: StateFlow<CoinDetailState> = savedStateHandle.get<String>("coinId")?.let { coinId ->
-        coinUseCases.getCoin(ids = coinId)
-            .map { list ->
-                CoinDetailState(
-                    isLoading = false,
-                    coin = list.firstOrNull()
-                )
-            }
-            .onStart {
-                emit(CoinDetailState(isLoading = true))
-            }
-            .catch { e ->
-                emit(CoinDetailState(isLoading = false, isError = e.localizedMessage ?: "Unknown Error"))
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = CoinDetailState(isLoading = true)
-            )
-    } ?: kotlin.run {
-        kotlinx.coroutines.flow.flowOf(CoinDetailState(isError = "Coin ID not found"))
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = CoinDetailState(isError = "Coin ID not found")
-            )
-    }
 }
+
+

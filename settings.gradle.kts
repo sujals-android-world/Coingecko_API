@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Coingecko API"
+rootProject.name = "CoingeckoAPI"
 include(":app")
  
