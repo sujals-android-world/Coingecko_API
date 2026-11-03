@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PortfolioViewModel @Inject constructor(
-    private val useCases: AllUserUseCases
+    private val  useCases: AllUserUseCases
 ) : ViewModel() {
 
     val userDetail: StateFlow<UserDetailState> = useCases.getUserDetailUseCase()

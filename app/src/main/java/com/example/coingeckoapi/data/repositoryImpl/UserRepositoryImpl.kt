@@ -37,7 +37,7 @@ class UserRepositoryImpl @Inject constructor(
         dao.deleteUser(user.toUserEntity())
     }
 
-    override  fun getUserDetail(): Flow<UserModel> {
-        return dao.getUserDetail().map { it.toUserModel() }
+    override  fun getUserDetail(): Flow<UserModel?> {
+        return dao.getUserDetail().map { it?.toUserModel() }
     }
 }

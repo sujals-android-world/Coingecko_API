@@ -7,39 +7,32 @@ import javax.inject.Inject
 class CreateUserUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
-    suspend operator fun invoke(userModel: UserModel) : Result<Unit> {
-        if(userModel.amount <= 0) {
-            return Result.failure(Exception("Amount must be greater than zero"))
+    suspend operator fun invoke(userModel: UserModel): Result<Unit> {
+        val validationError = validate(userModel)
+        if (validationError != null) {
+            return Result.failure(Exception(validationError))
         }
-        if(userModel.name.isBlank()) {
-            return Result.failure(Exception("Name cannot be empty"))
-        }
-        if (userModel.name.length < 3) {
-            return Result.failure(Exception("Name must be at least 3 characters long"))
-        }
-        if (userModel.name.length > 10) {
-            return Result.failure(Exception("Name must be at most 10 characters long"))
-        }
-        if (userModel.email.isBlank()) {
-            return Result.failure(Exception("Email cannot be empty"))
-        }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(userModel.email).matches()) {
-            return Result.failure(Exception("Invalid email format"))
-        }
-        if (userModel.password.isBlank()) {
-            return Result.failure(Exception("Password cannot be empty"))
-        }
-        if (userModel.password.length < 6) {
-            return Result.failure(Exception("Password must be at least 6 characters long"))
-        }
-        if (userModel.password.length > 12) {
-            return Result.failure(Exception("Password must be at most 12 characters long"))
-        }
+
         return try {
             repository.createUser(userModel)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private fun validate(userModel: UserModel): String? {
+        return when {
+            userModel.amount <= 0 -> "Amount must be greater than zero"
+            userModel.name.isBlank() -> "Name cannot be empty"
+            userModel.name.length < 3 -> "Name must be at least 3 characters long"
+            userModel.name.length > 10 -> "Name must be at most 10 characters long"
+            userModel.email.isBlank() -> "Email cannot be empty"
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(userModel.email).matches() -> "Invalid email format"
+            userModel.password.isBlank() -> "Password cannot be empty"
+            userModel.password.length < 6 -> "Password must be at least 6 characters long"
+            userModel.password.length > 12 -> "Password must be at most 12 characters long"
+            else -> null
         }
     }
 }

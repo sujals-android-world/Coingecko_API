@@ -20,8 +20,8 @@ sealed class BottomBarScreen(
 }
 
 val bottomScreens = listOf(
-    BottomBarScreen.Market,
     BottomBarScreen.Portfolio,
+    BottomBarScreen.Market,
     BottomBarScreen.Watchlist,
     BottomBarScreen.Settings
 )

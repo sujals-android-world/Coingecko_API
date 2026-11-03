@@ -16,4 +16,16 @@ class PreferenceRepoImpl @Inject constructor(
         userPreferences.saveUser(isAvailable)
     }
 
+    override suspend fun addToWatchlist(id: String): Boolean {
+        return userPreferences.addToWatchlist(id)
+    }
+
+    override fun getAllId(): Flow<Set<String>> {
+         return userPreferences.getWatchlist
+    }
+
+    override suspend fun removeFromWatchList(id: String) {
+        userPreferences.removeFromWatchlist(id)
+    }
+
 }

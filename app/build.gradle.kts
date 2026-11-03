@@ -45,11 +45,13 @@ room {
 dependencies {
     // 1. Base Platform & Android Extensions (Duplicates cleaned up)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     // 2. Visual Extended Icons & Core Navigation
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
 
     // 3. Clean Setup via Your Custom Bundles

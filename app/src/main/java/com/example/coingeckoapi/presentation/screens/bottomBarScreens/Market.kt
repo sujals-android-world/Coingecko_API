@@ -2,7 +2,7 @@ package com.example.coingeckoapi.presentation.screens.bottomBarScreens
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable // <-- Import ye add hoga
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,13 +30,26 @@ fun Market(
     searchQuery : String,
     eventFlow: Flow<UiEvent>,
     onSearchQueryChanged: (String) -> Unit,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onAddSwipe : (String) -> Unit,
+    preferenceEventFlow : Flow<UiEvent>
+
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(eventFlow) {
         eventFlow.collect { event ->
             when (event) {
+                is UiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(preferenceEventFlow) {
+        preferenceEventFlow.collect { event ->
+            when(event) {
                 is UiEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
@@ -115,10 +128,12 @@ fun Market(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                             contentPadding = paddingBottomSpacer()
                         ) {
-                            items(coinListState.coinList) { coin ->
-                                ShowCoin(
+                            items(coinListState.coinList,key = {it.id}) { coin ->
+
+                                SwipeableCoinCard(
                                     coinModel = coin,
-                                    onItemClick = onItemClick // <--- 2. Yahan pass kar diya
+                                    onItemClick = onItemClick,
+                                    onSwipeAction = onAddSwipe
                                 )
                             }
                         }
@@ -129,91 +144,141 @@ fun Market(
     }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowCoin(
+fun SwipeableCoinCard(
     coinModel: CoinModel,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onSwipeAction: (String) -> Unit,
+    swipeText: String = "Add",
+    swipeBackgroundColor: Color = Color(0xFF2E7D32),
+    swipeDirection: SwipeToDismissBoxValue = SwipeToDismissBoxValue.StartToEnd
 ) {
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                onItemClick(coinModel.id)
-            },
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Left Side: Name and Symbol
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = coinModel.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = coinModel.symbol.uppercase(),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                    Text(
-                        text = "Rank #${coinModel.market_cap_rank}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+    val swipeState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == swipeDirection) {
+                onSwipeAction(coinModel.id)
+            }
+            false
+        }
+    )
+
+    val enableStartToEnd = swipeDirection == SwipeToDismissBoxValue.StartToEnd
+    val enableEndToStart = swipeDirection == SwipeToDismissBoxValue.EndToStart
+
+    SwipeToDismissBox(
+        state = swipeState,
+        enableDismissFromStartToEnd = enableStartToEnd,
+        enableDismissFromEndToStart = enableEndToStart,
+        backgroundContent = {
+            val alignment = if (swipeDirection == SwipeToDismissBoxValue.StartToEnd) {
+                Alignment.CenterStart
+            } else {
+                Alignment.CenterEnd
             }
 
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            val paddingModifier = if (swipeDirection == SwipeToDismissBoxValue.StartToEnd) {
+                Modifier.padding(start = 24.dp)
+            } else {
+                Modifier.padding(end = 24.dp)
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(swipeBackgroundColor),
+                contentAlignment = alignment
             ) {
                 Text(
-                    text = "₹${coinModel.current_price}",
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = swipeText,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    modifier = paddingModifier
                 )
+            }
+        }
+    ) {
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onItemClick(coinModel.id)
+                },
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = coinModel.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = coinModel.symbol.uppercase(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                        Text(
+                            text = "Rank #${coinModel.market_cap_rank}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
 
-                val isPositive = coinModel.price_change_percentage_24h >= 0
-                val priceColor = if (isPositive) Color(0xFF2E7D32) else Color(0xFFC62828)
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "₹${coinModel.current_price}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
 
-                Text(
-                    text = "${if (isPositive) "+" else ""}${String.format("%.2f", coinModel.price_change_percentage_24h)}%",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = priceColor
-                )
+                    val isPositive = coinModel.price_change_percentage_24h >= 0
+                    val priceColor = if (isPositive) Color(0xFF2E7D32) else Color(0xFFC62828)
+
+                    Text(
+                        text = "${if (isPositive) "+" else ""}${String.format("%.2f", coinModel.price_change_percentage_24h)}%",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = priceColor
+                    )
+                }
             }
         }
     }
 }
-
 @Composable
 fun paddingBottomSpacer(): PaddingValues {
     return PaddingValues(bottom = 24.dp)

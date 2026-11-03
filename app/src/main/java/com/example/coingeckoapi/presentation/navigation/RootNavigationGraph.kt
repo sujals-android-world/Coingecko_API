@@ -9,10 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.coingeckoapi.presentation.coinViewModel.CreateAccountViewModel
 import com.example.coingeckoapi.presentation.coinViewModel.DetailCoinViewmodel
+import com.example.coingeckoapi.presentation.coinViewModel.PortfolioViewModel
 import com.example.coingeckoapi.presentation.coinViewModel.PreferenceViewModel
 import com.example.coingeckoapi.presentation.navigation.bottomNavigation.MainScreen
 import com.example.coingeckoapi.presentation.screens.DetailedCoin
 import com.example.coingeckoapi.presentation.screens.CreateUserScreen
+import com.example.coingeckoapi.presentation.screens.ProfileScreen
 
 @Composable
 fun RootNavigationGraph(
@@ -27,7 +29,13 @@ fun RootNavigationGraph(
         composable(Routes.COIN_DETAIL) {
             val detailCoinViewmodel : DetailCoinViewmodel = hiltViewModel()
             val detailState by detailCoinViewmodel.coinDetailState.collectAsStateWithLifecycle()
-            DetailedCoin(state = detailState)
+            val transactionState = detailCoinViewmodel.transactionState?.collectAsStateWithLifecycle()?.value
+            DetailedCoin(
+                state = detailState,
+                onBuyClick = {  },
+                onSellClick = {  },
+                transactionState = transactionState!!
+            )
         }
 
         composable(Routes.CREATE_USER){
@@ -48,6 +56,23 @@ fun RootNavigationGraph(
                         }
                     }
                 }
+            )
+        }
+
+        composable(Routes.PROFILE_SCREEN) {
+            val viewmodel : PortfolioViewModel = hiltViewModel()
+            val profileState = viewmodel.userDetail.collectAsStateWithLifecycle().value
+            val createUserViewmodel : CreateAccountViewModel = hiltViewModel()
+            val createViewmodel : CreateAccountViewModel = hiltViewModel()
+            val state = createViewmodel.createAccountResult.collectAsStateWithLifecycle().value
+
+            ProfileScreen(
+                user = profileState,
+                onBackClick = { navHostController.popBackStack() },
+                onUpdateClick = { userModel ->
+                    createUserViewmodel.createUser(userModel)
+                },
+                result = state
             )
         }
 

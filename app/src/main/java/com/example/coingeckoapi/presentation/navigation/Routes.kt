@@ -13,4 +13,6 @@ object Routes {
 
     const val CREATE_USER  = "CREATE_USER"
 
+    const val PROFILE_SCREEN = "PROFILE_SCREEN"
+
 }

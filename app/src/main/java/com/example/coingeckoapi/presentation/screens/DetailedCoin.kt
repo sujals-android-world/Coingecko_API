@@ -15,14 +15,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.coingeckoapi.domain.model.CoinModel
 import com.example.coingeckoapi.presentation.coinViewModel.CoinDetailState
+import com.example.coingeckoapi.presentation.coinViewModel.TransactionByIDState
 
 
 @Composable
 fun DetailedCoin(
     state: CoinDetailState,
+    onBuyClick: () -> Unit = {},
+    onSellClick: () -> Unit = {},
+    transactionState : TransactionByIDState
 ) {
-
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -51,7 +53,7 @@ fun DetailedCoin(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(20.dp),
+                        .padding(15.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Spacer(modifier = Modifier.height(10.dp))
@@ -60,13 +62,13 @@ fun DetailedCoin(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.elevatedCardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         )
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp),
+                                .padding(15.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Row(
@@ -149,7 +151,6 @@ fun DetailedCoin(
                         }
                     }
 
-                    // 2. Market Stats Section Title
                     Text(
                         text = "Market Statistics",
                         style = MaterialTheme.typography.titleMedium,
@@ -158,7 +159,6 @@ fun DetailedCoin(
                         modifier = Modifier.padding(top = 4.dp)
                     )
 
-                    // 3. Grid / Rows for Market Stats (High/Low 24h, Market Cap, Volume)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -191,49 +191,75 @@ fun DetailedCoin(
                         )
                     }
 
-                    // 4. All Time High & Low Section Title
-                    Text(
-                        text = "All-Time Records",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+                    Spacer(modifier = Modifier.height(10.dp))
 
+                    if(transactionState.error.isNotBlank()) {
+
+                    } else 
                     ElevatedCard(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.elevatedCardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     ) {
-                        Column(
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            RecordRow(label = "All-Time High (ATH)", value = "₹${coin.ath}", date = coin.ath_date)
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
-                            RecordRow(label = "All-Time Low (ATL)", value = "₹${coin.atl}", date = coin.atl_date)
+                            Button(
+                                onClick = onBuyClick,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(40.dp),
+                                shape = RoundedCornerShape(14.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF2E7D32),
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text(
+                                    text = "BUY",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Button(
+                                onClick = onSellClick,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(40.dp),
+                                shape = RoundedCornerShape(14.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFDC2222),
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text(
+                                    text = "SELL",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }
     }
 }
 
-// Chhota reusable card stats dikhane ke liye
 @Composable
 fun StatCard(title: String, value: String, modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier,
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(
@@ -254,35 +280,5 @@ fun StatCard(title: String, value: String, modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
-    }
-}
-
-// ATH / ATL row layout
-@Composable
-fun RecordRow(label: String, value: String, date: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = "Date: ${date.take(10)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
     }
 }

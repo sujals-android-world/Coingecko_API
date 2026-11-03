@@ -5,12 +5,15 @@ import androidx.room.Room
 import com.example.coingeckoapi.data.remote.CoingeckoAPIService
 import com.example.coingeckoapi.data.repositoryImpl.CoinRepositoryImpl
 import com.example.coingeckoapi.data.repositoryImpl.PreferenceRepoImpl
+import com.example.coingeckoapi.data.repositoryImpl.TransactionRepoImpl
 import com.example.coingeckoapi.data.repositoryImpl.UserRepositoryImpl
 import com.example.coingeckoapi.data.roomdb.dao.CoinDao
+import com.example.coingeckoapi.data.roomdb.dao.TransactionDao
 import com.example.coingeckoapi.data.roomdb.dao.UserDao
 import com.example.coingeckoapi.data.roomdb.db.CoinDB
 import com.example.coingeckoapi.domain.repository.CoinRepository
 import com.example.coingeckoapi.domain.repository.PreferenceRepository
+import com.example.coingeckoapi.domain.repository.TransactionRepository
 import com.example.coingeckoapi.domain.repository.UserRepository
 import com.example.coingeckoapi.domain.usacases.allCoinUseCases.CoinUseCases
 import com.example.coingeckoapi.domain.usacases.allCoinUseCases.GetAllCoin
@@ -20,6 +23,8 @@ import com.example.coingeckoapi.domain.usacases.allUserUseCases.AllUserUseCases
 import com.example.coingeckoapi.domain.usacases.allUserUseCases.CreateUserUseCase
 import com.example.coingeckoapi.domain.usacases.allUserUseCases.GetUserDetailUseCase
 import com.example.coingeckoapi.domain.usacases.allUserUseCases.SaveUserUseCase
+import com.example.coingeckoapi.domain.usacases.transactionUseCases.AllTransactionUseCases
+import com.example.coingeckoapi.domain.usacases.transactionUseCases.GetTransactionById
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -75,6 +80,14 @@ abstract class AppModule {
 
         @Provides
         @Singleton
+        fun provideTransactionUseCases(transactionRepository: TransactionRepository) : AllTransactionUseCases {
+            return AllTransactionUseCases(
+                getTransactionById = GetTransactionById(transactionRepository)
+            )
+        }
+
+        @Provides
+        @Singleton
         fun provideCoinDB(@ApplicationContext context: Context): CoinDB {
             return Room.databaseBuilder(
                 context,
@@ -94,6 +107,12 @@ abstract class AppModule {
         fun provideUserDao(db: CoinDB) : UserDao {
             return db.userDao()
         }
+
+        @Provides
+        @Singleton
+        fun provideTransactionDao(db : CoinDB) : TransactionDao{
+            return db.transactionDao()
+        }
     }
 
     @Binds
@@ -107,4 +126,8 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindPreferencesRepository(preferenceRepoImpl: PreferenceRepoImpl) : PreferenceRepository
+
+    @Binds
+    @Singleton
+    abstract fun provideTransactionRepository(transactionRepoImpl: TransactionRepoImpl) : TransactionRepository
 }

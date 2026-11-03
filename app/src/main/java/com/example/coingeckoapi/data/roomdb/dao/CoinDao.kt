@@ -19,5 +19,7 @@ interface CoinDao {
     @Query("select * from coin_table where id  = :id")
     suspend fun getCoinById(id : String): CoinEntity?
 
+    @Query("select * from coin_table where id In (:ids)")
+    fun getCoinsById(ids : Set<String>) : Flow<List<CoinEntity>>
 
 }

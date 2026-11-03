@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coingeckoapi.domain.usacases.allCoinUseCases.CoinUseCases
+import com.example.coingeckoapi.domain.usacases.transactionUseCases.AllTransactionUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailCoinViewmodel @Inject constructor(
     private val coinUseCases: CoinUseCases,
+    private val transactionUseCases : AllTransactionUseCases,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -47,6 +49,24 @@ class DetailCoinViewmodel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = CoinDetailState(isError = "Coin ID not found")
         )
+
+    val transactionState : StateFlow<TransactionByIDState>? = savedStateHandle.get<String>("coinId")?.let { coinId ->
+        transactionUseCases.getTransactionById(coinId)
+            .map { transaction ->
+                TransactionByIDState(transaction = transaction, isLoading = false)
+            }
+            .onStart {
+                TransactionByIDState(isLoading = true)
+            }
+            .catch { e ->
+                TransactionByIDState(error = e.localizedMessage ?: "An unexpected error occurred", isLoading = false)
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = TransactionByIDState(isLoading = true)
+            )
+    }
 }
 
 

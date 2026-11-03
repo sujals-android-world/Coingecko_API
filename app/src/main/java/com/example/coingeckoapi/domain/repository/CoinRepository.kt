@@ -1,5 +1,6 @@
 package com.example.coingeckoapi.domain.repository
 
+import com.example.coingeckoapi.data.roomdb.CoinEntity
 import com.example.coingeckoapi.domain.model.CoinModel
 import kotlinx.coroutines.flow.Flow
 
@@ -11,5 +12,5 @@ interface CoinRepository {
 
      suspend fun refreshCoins() : Result<Unit>
 
-
+     fun getCoinsById(ids : Set<String>) : Flow<List<CoinModel>>
 }

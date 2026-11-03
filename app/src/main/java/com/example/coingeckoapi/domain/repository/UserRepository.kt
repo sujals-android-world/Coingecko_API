@@ -13,7 +13,7 @@ interface UserRepository {
 
     suspend fun deleteUser(user : UserModel)
 
-    fun getUserDetail()  : Flow<UserModel>
+    fun getUserDetail()  : Flow<UserModel?>
 
 
 }

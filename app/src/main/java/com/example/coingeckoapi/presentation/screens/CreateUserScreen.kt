@@ -27,19 +27,22 @@ import com.example.coingeckoapi.domain.model.UserModel
 @Composable
 fun CreateUserScreen(
     result: Result<Unit>?,
-    onCreateUser: (userModel : UserModel) -> Unit,
+    onCreateUser: (userModel: UserModel) -> Unit,
     onUserCreated: () -> Unit
 ) {
-    val context  = LocalContext.current
+    val context = LocalContext.current
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
+    var amountText by remember { mutableStateOf("") }
 
     LaunchedEffect(result) {
         result?.onSuccess {
             Toast.makeText(context, "User created successfully!", Toast.LENGTH_SHORT).show()
             onUserCreated()
+        }
+        result?.onFailure {
+            Toast.makeText(context, it.message ?: "An error occurred", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -70,32 +73,27 @@ fun CreateUserScreen(
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = amount,
-            onValueChange = { amount = it },
+            value = amountText,
+            onValueChange = { amountText = it },
             label = { Text("Amount") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth()
         )
         Button(
             onClick = {
-                val amountDouble = amount.toDoubleOrNull() ?: 0.0
+                val finalAmount = amountText.toDoubleOrNull() ?: 0.0
                 onCreateUser(
                     UserModel(
                         name = name,
                         email = email,
                         password = password,
-                        amount = amountDouble
+                        amount = finalAmount
                     )
                 )
             },
             modifier = Modifier.padding(top = 16.dp),
-
         ) {
             Text("Create User")
-        }
-
-        result?.onFailure {
-            Text(text = "Error: ${it.message}", modifier = Modifier.padding(top = 8.dp))
         }
     }
 }
