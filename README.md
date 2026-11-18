@@ -11,7 +11,7 @@ Prices are **real and live** (CoinGecko API), but the money is **virtual**. Prac
 
 | Market | Coin Detail | Portfolio | Watchlist |
 |:---:|:---:|:---:|:---:|
-| ![Market](docs/screenshots/market.png) | ![Detail](docs/screenshots/detail.png) | ![Portfolio](docs/screenshots/portfolio.png) | ![Watchlist](docs/screenshots/watchlist.png) |
+| ![Market](docs/screenshots/market.jpeg) | ![Detail](docs/screenshots/detail.jpeg) | ![Portfolio](docs/screenshots/portfolio.jpeg) | ![Watchlist](docs/screenshots/watchlist.jpeg) |
 
 ---
 
