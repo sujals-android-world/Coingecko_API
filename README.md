@@ -15,6 +15,14 @@ Prices are **real and live** (CoinGecko API), but the money is **virtual**. Prac
 
 ---
 
+## 🎥 Demo
+
+
+
+https://github.com/user-attachments/assets/834e8ef9-7ab5-42c7-9a00-51e8a40a657b
+
+
+
 ## ✨ Features
 
 ### ✅ Working
