@@ -112,7 +112,6 @@ Get the latest APK from the [**Releases**](../../releases) section.
 Android Developer (Kotlin, Jetpack Compose)
 
 - GitHub: [sujals-android-world](https://github.com/sujals-android-world)
-- LinkedIn: <!-- add your LinkedIn URL here -->
 - Email: sujalbhaibhatiya123@gmail.com
 
 ---
